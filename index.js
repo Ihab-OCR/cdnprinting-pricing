@@ -639,6 +639,7 @@ async getRowsDataFromApi() {
 
 },
 template: `
+<div>
 <template v-for="(form_el, key) in form.elements">
 <template v-if="form_el.type == 'select' || form_el.type == 'multiple_select'">
 <div class="input__component">
@@ -668,6 +669,8 @@ class="button-green is-large w-button"
 :disabled="!showPrice">
 Add to cart
 </button>
+</div>
+
 </div>
 `
 })
