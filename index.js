@@ -360,10 +360,6 @@ methods: {
 
             this.form.elements.sort((a, b) => (a.order > b.order ? 1 : -1))
         },
-        onSubmit(event) {
-            event.preventDefault()
-            alert(JSON.stringify(this.form))
-        },
         calcPrice(data){
             this.showLoader =true;
             this.product = {}
@@ -639,7 +635,7 @@ async getRowsDataFromApi() {
 
 },
 template: `
-<form id="email-form" name="email-form" data-name="Email Form" method="get" aria-label="Email Form" @change="onChange" @submit="onSubmit" v-if="show">
+<form id="email-form" name="email-form" data-name="Email Form" method="get" aria-label="Email Form" @change="onChange" v-if="show">
 <template v-for="(form_el, key) in form.elements">
 <template v-if="form_el.type == 'select' || form_el.type == 'multiple_select'">
 <div class="input__component">
