@@ -138,6 +138,7 @@ methods: {
                 button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-name', this.form.elements[index].label)
                 button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-type', 'readonly')
                 button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-value', this.form.elements[index].choice)
+
             }
         }
 
@@ -583,6 +584,9 @@ methods: {
 
 
 },
+onSubmit(e){
+    e.preventDefault()
+},
 async getFieldsDataFromApi() {
     this.showLoader = true
 
@@ -635,7 +639,7 @@ async getRowsDataFromApi() {
 
 },
 template: `
-<form id="email-form" name="email-form" data-name="Email Form" method="get" aria-label="Email Form" @change="onChange" v-if="show">
+<form id="email-form" name="email-form" data-name="Email Form" method="get" aria-label="Email Form" @submit="onSubmit" @change="onChange" v-if="show">
 <template v-for="(form_el, key) in form.elements">
 <template v-if="form_el.type == 'select' || form_el.type == 'multiple_select'">
 <div class="input__component">
