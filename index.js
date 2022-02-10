@@ -639,7 +639,6 @@ async getRowsDataFromApi() {
 
 },
 template: `
-<form id="email-form" name="email-form" data-name="Email Form" method="get" aria-label="Email Form" @submit="onSubmit" @change="onChange" v-if="show">
 <template v-for="(form_el, key) in form.elements">
 <template v-if="form_el.type == 'select' || form_el.type == 'multiple_select'">
 <div class="input__component">
@@ -670,7 +669,6 @@ class="button-green is-large w-button"
 Add to cart
 </button>
 </div>
-</form>
 `
 })
 var app = new Vue({
