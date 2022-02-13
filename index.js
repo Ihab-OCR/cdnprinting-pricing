@@ -75,8 +75,14 @@ methods: {
             kvp[kvp.length] = [key,value].join('=');
         }
 
+        let params = ""
         // can return this or...
-        let params = kvp.join('&');
+        if(kvp.length > 1){
+             params = kvp.join('&');
+        }else{
+             params = kvp.join('');
+        }
+       
 
         // reload page with new params
         document.location.search = params;
@@ -662,7 +668,7 @@ required
 <div class="add">
 <button 
 id="add-to-cart"
-class="button-green is-large w-button"
+class="button-green is-large w-button snipcart-add-item"
 :data-item-id="product.id"
 :data-item-price="product.Price"
 :data-item-name="product.SKU"
