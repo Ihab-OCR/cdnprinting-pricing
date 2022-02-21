@@ -54,7 +54,7 @@ Vue.component('cdn-pr-form', {
         }
        this.fetchPriceDifferences();
 
-       this.product_url = document.location.pathname
+       this.product_url = document.location.pathname + document.location.search
 },
 methods: {
     removeParam(key, sourceURL) {
