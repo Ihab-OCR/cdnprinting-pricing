@@ -396,6 +396,7 @@ methods: {
             this.fetchPriceDifferences();
 
             this.form.elements.sort((a, b) => (a.order > b.order ? 1 : -1))
+            this.product_url = document.location.pathname + document.location.search
         },
         calcPrice(data){
             this.showLoader =true;
