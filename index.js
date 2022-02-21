@@ -12,6 +12,7 @@ Vue.component('cdn-pr-form', {
             storedFormData: [],
             formMessage : '',
             ignored : ['SKU'],
+            product_id: "",
             product_url: "",
             selectTypes: ['select', 'link_row'],
             showPrice : false,
@@ -55,6 +56,8 @@ Vue.component('cdn-pr-form', {
        this.fetchPriceDifferences();
 
        this.product_url = document.location.pathname + document.location.search
+            this.product_id = parseInt(this.product['SKU'])
+
 },
 methods: {
     removeParam(key, sourceURL) {
@@ -397,6 +400,8 @@ methods: {
 
             this.form.elements.sort((a, b) => (a.order > b.order ? 1 : -1))
             this.product_url = document.location.pathname + document.location.search
+            this.product_id = parseInt(this.product['SKU'])
+
         },
         calcPrice(data){
             this.showLoader =true;
