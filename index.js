@@ -12,6 +12,7 @@ Vue.component('cdn-pr-form', {
             storedFormData: [],
             formMessage : '',
             ignored : ['SKU'],
+            product_url: "",
             selectTypes: ['select', 'link_row'],
             showPrice : false,
             formResult: [],
@@ -51,7 +52,9 @@ Vue.component('cdn-pr-form', {
             this.selectSKU(this.rowsResult[0])
             this.insertParam('sku',this.rowsResult[0].SKU);
         }
-       this.fetchPriceDifferences()
+       this.fetchPriceDifferences();
+
+       this.product_url = document.location.pathname
 },
 methods: {
     removeParam(key, sourceURL) {
@@ -698,6 +701,7 @@ id="add-to-cart"
 class="button-green is-large w-button snipcart-add-item"
 :data-item-id="product.id"
 :data-item-price="product.Price"
+:data_item_url="product_url"
 :data-item-name="product.SKU"
 :disabled="!showPrice">
 Add to cart
