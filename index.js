@@ -54,6 +54,23 @@ Vue.component('cdn-pr-form', {
        this.fetchPriceDifferences()
 },
 methods: {
+    removeParam(key, sourceURL) {
+        var rtn = sourceURL.split("?")[0],
+            param,
+            params_arr = [],
+            queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
+        if (queryString !== "") {
+            params_arr = queryString.split("&");
+            for (var i = params_arr.length - 1; i >= 0; i -= 1) {
+                param = params_arr[i].split("=")[0];
+                if (param === key) {
+                    params_arr.splice(i, 1);
+                }
+            }
+            if (params_arr.length) rtn = rtn + "?" + params_arr.join("&");
+        }
+        return rtn;
+    },
      insertParam(key, value) {
         key = encodeURIComponent(key);
         value = encodeURIComponent(value);
@@ -75,17 +92,13 @@ methods: {
             kvp[kvp.length] = [key,value].join('=');
         }
 
-        let params = ""
-        // can return this or...
-        if(kvp.length > 1){
-             params = kvp.join('&');
-        }else{
-             params = kvp.join('');
-        }
-       
+        kvp[0] = kvp[0]+kvp[1]
 
+        let params =kvp[0] + kvp.slice(1, -1).join('&');
+       
+        console.log(params)
         // reload page with new params
-        document.location.search = params;
+        window.history.pushState("", "", document.URL+'?'+params );
     },
     selectSKU(obj){
         if(obj != null){
@@ -112,10 +125,10 @@ methods: {
                            obj[form_el.label].value
                        }
                    }
-
                         //if column is part of form calculate the rest of possibilities
                         if(!this.ignored.includes(form_el.label)){
                          this.calcPossibilities(form_el.label)
+
                      }
 
                  }
@@ -362,7 +375,21 @@ methods: {
             this.calcPossibilities(event.target.id);
 
             this.selectSKU(this.formResult[0]);
-
+            
+            if(this.formResult[0]){
+                var url = new URL(document.URL);
+                var search_params = url.searchParams;
+    
+                // new value of "id" is set to "101"
+                search_params.set('sku', this.formResult[0]['SKU']);
+    
+                // change the search property of the main url
+                url.search = search_params.toString();
+    
+                // the new url string
+                window.history.pushState("", "", url.toString()); 
+            }
+           
             this.fetchPriceDifferences();
 
             this.form.elements.sort((a, b) => (a.order > b.order ? 1 : -1))
@@ -650,7 +677,7 @@ template: `
 <template v-if="form_el.type == 'select' || form_el.type == 'multiple_select'">
 <div class="input__component">
 <label :for="form_el.label" class="input__label">{{form_el.label}}</label>
-<select :id="form_el.label" :name="form_el.label" :data-name="form_el.label" class="input__select w-select" v-model="form_el.choice" size="md"
+<select :id="form_el.label" :name="form_el.label" @change="onChange" :data-name="form_el.label" class="input__select w-select" v-model="form_el.choice" size="md"
 required
 :disabled="form_el.disabled"
 >
