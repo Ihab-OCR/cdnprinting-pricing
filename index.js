@@ -56,7 +56,9 @@ Vue.component('cdn-pr-form', {
         }
        this.fetchPriceDifferences();
 
-       this.product_url = document.location.pathname + document.location.search
+       // this.product_url = document.location.pathname + document.location.search
+       // Crawler validation url
+        this.product_url ='https://ver.reprocdn.com/v/'+ this.table_id +'/'+ this.product['id'];
             this.product_id = parseInt(this.product['SKU'])
 
 },
@@ -400,7 +402,9 @@ methods: {
             this.fetchPriceDifferences();
 
             this.form.elements.sort((a, b) => (a.order > b.order ? 1 : -1))
-            this.product_url = document.location.pathname + document.location.search
+            // this.product_url = document.location.pathname + document.location.search
+            // Crawler validation url (Salim)
+            this.product_url ='https://ver.reprocdn.com/v/'+ this.table_id +'/'+ this.product['id'];
             this.product_id = parseInt(this.product['SKU']);
             this.btn_key += 1
 
