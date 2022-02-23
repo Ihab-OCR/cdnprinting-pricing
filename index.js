@@ -705,9 +705,13 @@ required
 </template>
 </template>
 
-<div class="price"> <strong>Price</strong> : {{product.Price}} $ </div>
-<br>
-<div class="add">
+<div class="add-to-cart__block">
+<div class="add-to-cart__price">
+<div id="add-qty" class="input-number__field"><a id="aq-minus" href="#" class="input-number__button is-minus w-button"></a>
+<div id="aq-value" class="input-number__value">1</div><a id="aq-plus" href="#" class="input-number__button is-plus w-button"></a>
+</div>
+<div class="item-price"> {{product.Price}} </div>
+</div>
 <button 
 :key="btn_key"
 id="add-to-cart"
@@ -718,8 +722,9 @@ class="button-green is-large w-button snipcart-add-item"
 :data-item-name="product.SKU"
 data-item-description="lorem ipsum dorem"
 data-item-image="https://i.etsystatic.com/12076327/r/il/3bbc43/2065551247/il_570xN.2065551247_3rzk.jpg"
+data-item-quantity="1"
 :disabled="!showPrice">
-Add to cart
+Ajouter au panier
 </button>
 </div>
 
