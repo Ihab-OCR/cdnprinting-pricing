@@ -3,12 +3,14 @@ Vue.component('cdn-pr-form', {
     props: [
     'table_id',
     'api_key',
-    'sku'
+    'sku',
+    'product_name',
+    'product_image',
+    'product_description'
     ],
     data: function() {
         return {
             anchors: [],
-            btn_key: 0,
             showLoader: false,
             storedFormData: [],
             formMessage : '',
@@ -52,63 +54,16 @@ Vue.component('cdn-pr-form', {
             this.selectSKU(this.rowsResult[this.rowsResult.map((e) => {return e.SKU }).indexOf(preselectedSKU)]);
         }else{
             this.selectSKU(this.rowsResult[0])
-            this.insertParam('sku',this.rowsResult[0].SKU);
         }
        this.fetchPriceDifferences();
 
        // this.product_url = document.location.pathname + document.location.search
        // Crawler validation url
         this.product_url ='https://ver.reprocdn.com/v/'+ this.table_id +'/'+ this.product['id'];
-            this.product_id = parseInt(this.product['SKU'])
-
+        this.product_id = parseInt(this.product['SKU'])
+        this.fillCustomData()
 },
 methods: {
-    removeParam(key, sourceURL) {
-        var rtn = sourceURL.split("?")[0],
-            param,
-            params_arr = [],
-            queryString = (sourceURL.indexOf("?") !== -1) ? sourceURL.split("?")[1] : "";
-        if (queryString !== "") {
-            params_arr = queryString.split("&");
-            for (var i = params_arr.length - 1; i >= 0; i -= 1) {
-                param = params_arr[i].split("=")[0];
-                if (param === key) {
-                    params_arr.splice(i, 1);
-                }
-            }
-            if (params_arr.length) rtn = rtn + "?" + params_arr.join("&");
-        }
-        return rtn;
-    },
-     insertParam(key, value) {
-        key = encodeURIComponent(key);
-        value = encodeURIComponent(value);
-
-        // kvp looks like ['key1=value1', 'key2=value2', ...]
-        var kvp = document.location.search.substr(1).split('&');
-        let i=0;
-
-        for(; i<kvp.length; i++){
-            if (kvp[i].startsWith(key + '=')) {
-                let pair = kvp[i].split('=');
-                pair[1] = value;
-                kvp[i] = pair.join('=');
-                break;
-            }
-        }
-
-        if(i >= kvp.length){
-            kvp[kvp.length] = [key,value].join('=');
-        }
-
-        kvp[0] = kvp[0]+kvp[1]
-
-        let params =kvp[0] + kvp.slice(1, -1).join('&');
-       
-        console.log(params)
-        // reload page with new params
-        window.history.pushState("", "", document.URL+'?'+params );
-    },
     selectSKU(obj){
         if(obj != null){
             this.formMessage = ''
@@ -147,29 +102,9 @@ methods: {
 
                 //get the price
                 this.calcPrice(tempFormData)
-                var toRemove = [];
-                const button = document.querySelector('#add-to-cart');
-                for (attr in button.attributes) {
-                  if (typeof button.attributes[attr] === 'object' &&
-                   typeof button.attributes[attr].name === 'string' &&
-                   (/^data-item-custom/).test(button.attributes[attr].name)) {
-                         // Unfortunately, we can not call removeAttr directly in here, since it
-                         // hurts the iteration.
-                         toRemove.push(button.attributes[attr].name);
-                     }
-                 }
 
-                 for (var i = 0; i < toRemove.length; i++) {
-                  button.removeAttribute(toRemove[i]);
-              }
-              for(let index in this.form.elements){
-                button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-name', this.form.elements[index].label)
-                button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-type', 'readonly')
-                button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-value', this.form.elements[index].choice)
-
-            }
         }
-
+         this.fillCustomData();
     },
     fetchPriceDifferences(){
         for(form_el of this.form.elements){
@@ -377,6 +312,10 @@ methods: {
             this.storedFormData = formData
             console.log('Total result ==> '+result.length)
         },
+         capitalize(word) {
+          const lower = word.toLowerCase();
+          return word.charAt(0).toUpperCase() + lower.slice(1);
+        },
         onChange(event) {
             this.showPrice = false
             this.formMessage = ""
@@ -385,30 +324,58 @@ methods: {
 
             this.selectSKU(this.formResult[0]);
             
-            if(this.formResult[0]){
-                var url = new URL(document.URL);
-                var search_params = url.searchParams;
-    
-                // new value of "id" is set to "101"
-                search_params.set('sku', this.formResult[0]['SKU']);
-    
-                // change the search property of the main url
-                url.search = search_params.toString();
-    
-                // the new url string
-                window.history.pushState("", "", url.toString()); 
-            }
            
             this.fetchPriceDifferences();
+
 
             this.form.elements.sort((a, b) => (a.order > b.order ? 1 : -1))
             // this.product_url = document.location.pathname + document.location.search
             // Crawler validation url (Salim)
             this.product_url ='https://ver.reprocdn.com/v/'+ this.table_id +'/'+ this.product['id'];
             this.product_id = parseInt(this.product['SKU']);
-            this.btn_key += 1
-
+            this.fillCustomData();
         },
+        fillCustomData(){
+
+            var toRemove = [];
+                let buttons = document.getElementsByClassName('snipcart-add-item');
+                for(let button of buttons){
+
+                for (attr in button.attributes) {
+                  if (typeof button.attributes[attr] === 'object' &&
+                   typeof button.attributes[attr].name === 'string' &&
+                   (/^data-item-custom/).test(button.attributes[attr].name)) {
+                         // Unfortunately, we can not call removeAttr directly in here, since it
+                         // hurts the iteration.
+                         toRemove.push(button.attributes[attr].name);
+                     }
+                 }
+
+                 for (var i = 0; i < toRemove.length; i++) {
+                  button.removeAttribute(toRemove[i]);
+                 }
+
+                 let ind = 0
+                for(let index in this.form.elements){
+                
+                button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-name', this.form.elements[index].label)
+                button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-type', 'readonly')
+                button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-value', this.form.elements[index].choice)
+                ind = index
+            }
+            for(let column of Object.keys(this.product)){
+                if((/^data-item/).test(column)){
+
+                button.setAttribute('data-item-custom'+(parseInt(ind)+1)+'-name', this.capitalize(column.split('-')[2]))
+                button.setAttribute('data-item-custom'+(parseInt(ind)+1)+'-type', 'readonly')
+                button.setAttribute('data-item-custom'+(parseInt(ind)+1)+'-value', this.product[column])
+                ind += 1
+                }
+            }
+
+                }
+        },
+       
         calcPrice(data){
             this.showLoader =true;
             this.product = {}
@@ -448,6 +415,8 @@ methods: {
         if(this.form.elements.map((e) => { return e.label }).indexOf('SKU') != -1){
            this.form.elements[this.form.elements.map((e) => { return e.label }).indexOf('SKU')].choice = found['SKU']
 
+            // limit to three significant digits
+            found['PriceFloat'] = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'CAD' }).format(parseFloat(found['Price']))
             //Found row
             this.product = found;
         }
@@ -710,18 +679,17 @@ required
 <div id="add-qty" class="input-number__field"><a id="aq-minus" href="#" class="input-number__button is-minus w-button"></a>
 <div id="aq-value" class="input-number__value">1</div><a id="aq-plus" href="#" class="input-number__button is-plus w-button"></a>
 </div>
-<div class="item-price"> {{product.Price}} </div>
+<div class="item-price"> {{product.PriceFloat}} </div>
 </div>
 <button 
-:key="btn_key"
 id="add-to-cart"
 class="button-green is-large w-button snipcart-add-item"
 :data-item-id="product.id"
 :data-item-price="product.Price"
 :data-item-url="product_url"
-:data-item-name="product.SKU"
-data-item-description="lorem ipsum dorem"
-data-item-image="https://i.etsystatic.com/12076327/r/il/3bbc43/2065551247/il_570xN.2065551247_3rzk.jpg"
+:data-item-name="product_name"
+:data-item-description="product_description"
+:data-item-image="product_image"
 data-item-quantity="1"
 :disabled="!showPrice">
 Ajouter au panier
