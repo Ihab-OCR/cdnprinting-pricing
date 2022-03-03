@@ -44,24 +44,26 @@ Vue.component('cdn-pr-form', {
         }
     },
     created: async function() {
-       let preselectedSKU = new URLSearchParams(window.location.search).get('sku');
 
+        if(this.table_id){
+           let preselectedSKU = new URLSearchParams(window.location.search).get('sku');
 
-       await this.getFieldsDataFromApi();
-       await this.getRowsDataFromApi();
-       this.anchors = [];
-         if(preselectedSKU){
-            this.selectSKU(this.rowsResult[this.rowsResult.map((e) => {return e.SKU }).indexOf(preselectedSKU)]);
-        }else{
-            this.selectSKU(this.rowsResult[0])
+           await this.getFieldsDataFromApi();
+           await this.getRowsDataFromApi();
+           this.anchors = [];
+             if(preselectedSKU){
+                this.selectSKU(this.rowsResult[this.rowsResult.map((e) => {return e.SKU }).indexOf(preselectedSKU)]);
+            }else{
+                this.selectSKU(this.rowsResult[0])
+            }
+           this.fetchPriceDifferences();
+
+           // Crawler validation url
+            this.product_url ='https://ver.reprocdn.com/v/'+ this.table_id +'/'+ this.product['id'];
+            this.product_id = parseInt(this.product['SKU'])
+            this.fillCustomData() 
         }
-       this.fetchPriceDifferences();
-
-       // this.product_url = document.location.pathname + document.location.search
-       // Crawler validation url
-        this.product_url ='https://ver.reprocdn.com/v/'+ this.table_id +'/'+ this.product['id'];
-        this.product_id = parseInt(this.product['SKU'])
-        this.fillCustomData()
+       
 },
 methods: {
     selectSKU(obj){
@@ -312,10 +314,6 @@ methods: {
             this.storedFormData = formData
             console.log('Total result ==> '+result.length)
         },
-         capitalize(word) {
-          const lower = word.toLowerCase();
-          return word.charAt(0).toUpperCase() + lower.slice(1);
-        },
         onChange(event) {
             this.showPrice = false
             this.formMessage = ""
@@ -363,15 +361,11 @@ methods: {
                 button.setAttribute('data-item-custom'+(parseInt(index)+1)+'-value', this.form.elements[index].choice)
                 ind = index
             }
-            for(let column of Object.keys(this.product)){
-                if((/^data-item/).test(column)){
-
-                button.setAttribute('data-item-custom'+(parseInt(ind)+1)+'-name', this.capitalize(column.split('-')[2]))
-                button.setAttribute('data-item-custom'+(parseInt(ind)+1)+'-type', 'readonly')
-                button.setAttribute('data-item-custom'+(parseInt(ind)+1)+'-value', this.product[column])
-                ind += 1
+                for(let column of Object.keys(this.product)){
+                    if((/^data-item/).test(column)){
+                        button.setAttribute(column, this.product[column])
+                    }
                 }
-            }
 
                 }
         },
@@ -657,7 +651,7 @@ async getRowsDataFromApi() {
 },
 template: `
 <div>
-<template v-for="(form_el, key) in form.elements">
+<template v-for="(form_el, key) in form.elements" v-if="table_id">
 <template v-if="form_el.type == 'select' || form_el.type == 'multiple_select'">
 <div class="input__component">
 <label :for="form_el.label" class="input__label">{{form_el.label}}</label>
