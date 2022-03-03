@@ -410,7 +410,7 @@ methods: {
            this.form.elements[this.form.elements.map((e) => { return e.label }).indexOf('SKU')].choice = found['SKU']
 
             // limit to three significant digits
-            found['PriceFloat'] = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'CAD' }).format(parseFloat(found['Price']))
+            found['PriceFloat'] = new Intl.NumberFormat('fr-CA', { style: 'currency', currency: 'CAD' }).format(parseFloat(found['Price']))
             //Found row
             this.product = found;
         }
